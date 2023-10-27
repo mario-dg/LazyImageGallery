@@ -1,32 +1,106 @@
 ﻿<Window x:Class="LazyImageGallery.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:c="clr-namespace:WpfToolkit.Controls;assembly=VirtualizingWrapPanel"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:LazyImageGallery"
-        mc:Ignorable="d"
-        d:DataContext="{d:DesignInstance Type=local:MainWindowViewModel, IsDesignTimeCreatable=False}"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        x:Name="RootWindow"
+        Title="YOLO Dataset Viewer"
+        Width="1800"
+        Height="1200"
+        d:DataContext="{d:DesignInstance Type=local:MainWindowViewModel,
+                                         IsDesignTimeCreatable=False}"
         Style="{StaticResource MaterialDesignWindow}"
-        Title="Demo App" Height="450" Width="800">
-  <Grid>
+        mc:Ignorable="d">
+
+  <Grid Margin="5">
     <Grid.RowDefinitions>
-      <RowDefinition Height="Auto"/>
-      <RowDefinition />
-      <RowDefinition Height="Auto"/>
+      <RowDefinition Height="Auto" />
+      <RowDefinition Height="*" />
     </Grid.RowDefinitions>
 
-    <Menu>
-      <MenuItem Header="_File">
-        <MenuItem Header="_Clear Count" Command="{Binding ClearCountCommand}"/>
-        <Separator />
-        <MenuItem Header="E_xit" Command="{x:Static ApplicationCommands.Close}"/>
-      </MenuItem>
-    </Menu>
-    
-    <StackPanel Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center">
-      <Image />
-      <TextBlock Text="{Binding Count, StringFormat='{}{0} Clicks'}" Margin="0,10"/>
-      <Button Content="_Click Me" Command="{Binding IncrementCountCommand}" />
+    <StackPanel Grid.Row="0"
+                Margin="0,0,0,5"
+                Orientation="Horizontal">
+      <Button Command="{Binding ChooseDirectoryCommand}" Content="Choose Dir" />
+      <TextBlock Margin="10,0,0,0"
+                 Padding="0"
+                 VerticalAlignment="Center"
+                 FontSize="20"
+                 Text="{Binding ImageDirectory}" />
+      <TextBlock Margin="10,0,10,0"
+                 Padding="0"
+                 VerticalAlignment="Center"
+                 FontSize="20"
+                 Text="|" />
+      <TextBlock Padding="0"
+                 VerticalAlignment="Center"
+                 FontSize="20"
+                 Text="{Binding Info}" />
     </StackPanel>
+
+    <!-- Adjust the two caching properties to change the caching and loading behaviour of the control -->
+    <c:VirtualizingItemsControl Grid.Row="1"
+                                ItemsSource="{Binding Thumbnails, Mode=OneWay}"
+                                VirtualizingPanel.CacheLength="1"
+                                VirtualizingPanel.CacheLengthUnit="Item"
+                                VirtualizingPanel.IsContainerVirtualizable="True"
+                                VirtualizingPanel.IsVirtualizing="True"
+                                VirtualizingPanel.VirtualizationMode="Recycling">
+
+      <c:VirtualizingItemsControl.ItemsPanel>
+        <ItemsPanelTemplate>
+          <c:VirtualizingWrapPanel IsVirtualizing="True"
+                                   Orientation="Horizontal"
+                                   SpacingMode="BetweenItemsOnly"
+                                   StretchItems="False" />
+        </ItemsPanelTemplate>
+      </c:VirtualizingItemsControl.ItemsPanel>
+
+      <c:VirtualizingItemsControl.ItemTemplate>
+        <DataTemplate>
+
+          <Grid Margin="0,5">
+            <!-- Render the Thumbnail image, fall back to a placeholder image via PriorityBinding -->
+            <Image Width="{Binding DataContext.ImageDim, ElementName=RootWindow}" Height="{Binding DataContext.ImageDim, ElementName=RootWindow}">
+              <Image.Source>
+                <PriorityBinding>
+                  <Binding IsAsync="True"
+                           Mode="OneWay"
+                           Path="Thumbnail" />
+                  <Binding ElementName="RootWindow" Path="DataContext.Placeholder" />
+                </PriorityBinding>
+              </Image.Source>
+            </Image>
+
+            <!-- Render the polygon list -->
+            <ItemsControl Width="{Binding DataContext.ImageDim, ElementName=RootWindow}"
+                          Height="{Binding DataContext.ImageDim, ElementName=RootWindow}"
+                          Background="Transparent"
+                          ItemsSource="{Binding Labels, Mode=OneWay}"
+                          Visibility="{Binding ImageLoaded, Converter={StaticResource BooleanToVisibilityConverter}}">
+              <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                  <Canvas Width="{Binding DataContext.ImageDim, ElementName=RootWindow}"
+                          Height="{Binding DataContext.ImageDim, ElementName=RootWindow}"
+                          Background="Transparent" />
+                </ItemsPanelTemplate>
+              </ItemsControl.ItemsPanel>
+              <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                  <Polygon Points="{Binding}"
+                           Stroke="Aquamarine"
+                           StrokeThickness="1" />
+                </DataTemplate>
+              </ItemsControl.ItemTemplate>
+            </ItemsControl>
+          </Grid>
+
+        </DataTemplate>
+      </c:VirtualizingItemsControl.ItemTemplate>
+    </c:VirtualizingItemsControl>
+
   </Grid>
+
 </Window>

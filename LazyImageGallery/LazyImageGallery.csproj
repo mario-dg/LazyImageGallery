@@ -30,6 +30,7 @@
 
   <ItemGroup>
     <ApplicationDefinition Remove="App.xaml" />
+    <None Remove="Resources\placeholder.png" />
     <Content Include="Resources\AppIcon.ico" />
     <Page Include="App.xaml" />
   </ItemGroup>
@@ -39,5 +40,14 @@
     <PackageReference Include="MaterialDesignThemes" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
     <PackageReference Include="Microsoft.Extensions.Hosting" />
+    <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" />
+    <PackageReference Include="Ookii.Dialogs.Wpf" />
+    <PackageReference Include="VirtualizingWrapPanel" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Images\placeholder.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
   </ItemGroup>
 </Project>

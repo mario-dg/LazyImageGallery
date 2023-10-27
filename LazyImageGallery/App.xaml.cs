@@ -1,10 +1,8 @@
-﻿using CommunityToolkit.Mvvm.Messaging;
-using MaterialDesignThemes.Wpf;
+﻿using System.Windows;
+
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using System.Windows;
-using System.Windows.Threading;
 
 namespace LazyImageGallery;
 
@@ -34,16 +32,5 @@ public partial class App : Application
         {
             services.AddSingleton<MainWindow>();
             services.AddSingleton<MainWindowViewModel>();
-
-            services.AddSingleton<WeakReferenceMessenger>();
-            services.AddSingleton<IMessenger, WeakReferenceMessenger>(provider => provider.GetRequiredService<WeakReferenceMessenger>());
-
-            services.AddSingleton(_ => Current.Dispatcher);
-
-            services.AddTransient<ISnackbarMessageQueue>(provider =>
-            {
-                Dispatcher dispatcher = provider.GetRequiredService<Dispatcher>();
-                return new SnackbarMessageQueue(TimeSpan.FromSeconds(3.0), dispatcher);
-            });
         });
 }
