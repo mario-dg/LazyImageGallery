@@ -24,7 +24,7 @@
     </PackageVersion>
     <PackageVersion Include="MaterialDesignThemes" Version="4.9.0" />
     <PackageVersion Include="Microsoft.Extensions.DependencyInjection" Version="7.0.0" />
-    <PackageVersion Include="Microsoft.Extensions.Hosting" Version="7.0.1" />
+    <PackageVersion Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.7.2" />
     <PackageVersion Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.75" />
     <PackageVersion Include="Moq" Version="4.20.69" />
